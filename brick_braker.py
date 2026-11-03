@@ -109,6 +109,31 @@ def paddle_movement(paddle_x):
 
     return paddle_x
 
+def check_collison(ball_speed_x, ball_speed_y, score):
+
+    #ball.x += ball_speed_x
+    #ball.y += ball_speed_y
+
+    if ball.colliderect(paddle) and ball_speed_y > 0:
+        ball.bottom = paddle.top
+        ball_speed_y *= -1
+
+        #change ball direction depending where ball hits paddle
+        hit_position = (ball.centerx - paddle.centerx) / (paddle.width / 2)
+        ball_speed_x = int(hit_position * 5)
+
+        if ball_speed_x == 0:
+            ball_speed_x = random.choice ([4,-4])
+
+    for brick in [bricks]:
+        if ball.colliderect(brick):
+            bricks.remove(brick)
+            score += 10
+            ball_speed_y *= -1
+
+
+    return ball_speed_x, ball_speed_y, score
+
 def ball_movement(ball_speed_x, ball_speed_y):
 
     ball.x += ball_speed_x
@@ -124,15 +149,6 @@ def ball_movement(ball_speed_x, ball_speed_y):
         ball_speed_y *= -1
 
     return ball_speed_x, ball_speed_y
-
-def check_collison(ball_speed_x, ball_speed_y, score):
-    if ball.colliderect(paddle) and ball_speed_y > 0:
-        ball.bottom = paddle.top
-        ball_speed_y *= -1
-
-    
-
-    return ball_speed_y
         
 
 #main game loop
@@ -150,7 +166,7 @@ while running:
     paddle_movement(paddle_x)
     #gets updated speeds
     ball_speed_x, ball_speed_y = ball_movement(ball_speed_x, ball_speed_y)
-    check_collison(ball_speed_x, ball_speed_y, score)
+    ball_speed_x, ball_speed_y, score = check_collison(ball_speed_x, ball_speed_y, score)
 
 
     pygame.display.flip()
