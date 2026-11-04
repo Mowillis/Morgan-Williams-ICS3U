@@ -41,6 +41,8 @@ paddle_x = 350
 ball = pygame.Rect(390, 520, 18, 18)
 ball_speed_x = 4
 ball_speed_y = -4
+#used to make new ball when colision with bricks
+old_ball = ball.copy()
 
 #Bricks
 brick_width = 65
@@ -54,7 +56,6 @@ def draw_game():
 
     screen.fill(BLACK)
 
-    #Draw Paddle
     #Draw Paddle and Ball
     pygame.draw.rect(screen, WHITE, paddle)
     pygame.draw.ellipse(screen, WHITE, ball)
@@ -80,6 +81,7 @@ def create_bricks():
     #calculate starting X
     start_x = (800 - total_width) // 2
 
+    #prints bricks centered
     for row in range(rows):
         for column in range(columns):
             x = start_x + column * (brick_width + brick_gap)
@@ -115,6 +117,7 @@ def check_collison(ball_speed_x, ball_speed_y, score):
     #ball.y += ball_speed_y
 
     if ball.colliderect(paddle) and ball_speed_y > 0:
+        #makes ball top
         ball.bottom = paddle.top
         ball_speed_y *= -1
 
@@ -125,11 +128,27 @@ def check_collison(ball_speed_x, ball_speed_y, score):
         if ball_speed_x == 0:
             ball_speed_x = random.choice ([4,-4])
 
-    for brick in [bricks]:
-        if ball.colliderect(brick):
+    brick_hit = False
+
+    for brick in bricks:
+        if ball.colliderect(brick) and brick_hit == False:
+
+            if old_ball.top >= brick.bottom:
+                ball_speed_y *= -1
+
+            if old_ball.bottom <= brick.top:
+                ball_speed_y *= -1
+
+            if old_ball.left >= brick.right:
+                ball_speed_x *= -1
+
+            if old_ball.right <= brick.left:
+                ball_speed_x *= -1
+
             bricks.remove(brick)
             score += 10
-            ball_speed_y *= -1
+
+        
 
 
     return ball_speed_x, ball_speed_y, score
@@ -150,6 +169,7 @@ def ball_movement(ball_speed_x, ball_speed_y):
 
     return ball_speed_x, ball_speed_y
         
+create_bricks()
 
 #main game loop
 running = True
@@ -162,7 +182,6 @@ while running:
             running = False
 
     draw_game()
-    create_bricks()
     paddle_movement(paddle_x)
     #gets updated speeds
     ball_speed_x, ball_speed_y = ball_movement(ball_speed_x, ball_speed_y)
