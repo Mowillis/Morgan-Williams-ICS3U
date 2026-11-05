@@ -112,10 +112,6 @@ def paddle_movement(paddle_x):
     return paddle_x
 
 def check_collison(ball_speed_x, ball_speed_y, score):
-
-    #ball.x += ball_speed_x
-    #ball.y += ball_speed_y
-
     if ball.colliderect(paddle) and ball_speed_y > 0:
         #makes ball top
         ball.bottom = paddle.top
@@ -133,20 +129,31 @@ def check_collison(ball_speed_x, ball_speed_y, score):
     for brick in bricks:
         if ball.colliderect(brick) and brick_hit == False:
 
-            if old_ball.top >= brick.bottom:
-                ball_speed_y *= -1
-
-            if old_ball.bottom <= brick.top:
-                ball_speed_y *= -1
-
+            if old_ball.right <= brick.left :
+                ball_speed_x = -ball_speed_x
+                
+            
             if old_ball.left >= brick.right:
-                ball_speed_x *= -1
+                ball_speed_x = -ball_speed_x
+                
 
-            if old_ball.right <= brick.left:
-                ball_speed_x *= -1
+            if old_ball.bottom <= brick.top and ball_speed_y < 0:
+                ball_speed_y = ball_speed_y
+
+            elif old_ball.bottom <= brick.top:
+                ball_speed_y = -ball_speed_y
+                
+
+            if old_ball.top >= brick.bottom and ball_speed_y < 0:
+                ball_speed_y = -ball_speed_y
+
+            elif old_ball.top >= brick.bottom:
+                ball_speed_y = ball_speed_y
+                
 
             bricks.remove(brick)
             score += 10
+            brick_hit = True
 
         
 
@@ -168,8 +175,20 @@ def ball_movement(ball_speed_x, ball_speed_y):
         ball_speed_y *= -1
 
     return ball_speed_x, ball_speed_y
+
+def reset_ball(ball_speed_x, ball_speed_y):
+    #return ball and paddle to starting position
+    paddle.x = SCREEN_WIDTH // 2 - paddle.width // 2
+    ball.x = SCREEN_WIDTH // 2 - ball.width // 2
+    ball.y = SCREEN_HEIGHT - 80
+
+    ball_speed_x = random.choice ([4,-4])
+    ball_speed_y = -4
+
+    return ball_speed_x, ball_speed_y
         
 create_bricks()
+reset_ball(ball_speed_x, ball_speed_y)
 
 #main game loop
 running = True
