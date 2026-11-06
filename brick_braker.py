@@ -41,8 +41,6 @@ paddle_x = 350
 ball = pygame.Rect(390, 520, 18, 18)
 ball_speed_x = 4
 ball_speed_y = -4
-#used to make new ball when colision with bricks
-old_ball = ball.copy()
 
 #Bricks
 brick_width = 65
@@ -129,34 +127,25 @@ def check_collison(ball_speed_x, ball_speed_y, score):
     for brick in bricks:
         if ball.colliderect(brick) and brick_hit == False:
 
-            if old_ball.right <= brick.left :
+            if old_ball.right <= brick.left:
                 ball_speed_x = -ball_speed_x
-                
+                ball.x = old_ball.x
             
-            if old_ball.left >= brick.right:
+            elif old_ball.left >= brick.right:
                 ball_speed_x = -ball_speed_x
+                ball.x = old_ball.x
                 
-
-            if old_ball.bottom <= brick.top and ball_speed_y < 0:
-                ball_speed_y = ball_speed_y
-
             elif old_ball.bottom <= brick.top:
                 ball_speed_y = -ball_speed_y
+                ball.y = old_ball.y
                 
-
-            if old_ball.top >= brick.bottom and ball_speed_y < 0:
-                ball_speed_y = -ball_speed_y
-
             elif old_ball.top >= brick.bottom:
-                ball_speed_y = ball_speed_y
+                ball_speed_y = -ball_speed_y
+                ball.y = old_ball.y
                 
-
             bricks.remove(brick)
             score += 10
             brick_hit = True
-
-        
-
 
     return ball_speed_x, ball_speed_y, score
 
@@ -202,9 +191,23 @@ while running:
 
     draw_game()
     paddle_movement(paddle_x)
-    #gets updated speeds
+    #used to make new ball when colision with bricks
+    old_ball = ball.copy()
     ball_speed_x, ball_speed_y = ball_movement(ball_speed_x, ball_speed_y)
     ball_speed_x, ball_speed_y, score = check_collison(ball_speed_x, ball_speed_y, score)
+
+    #reset ball and lose life if ball falls bellow paddle
+    if ball.top > SCREEN_HEIGHT:
+        reset_ball(ball_speed_x, ball_speed_y)
+        lives -= 1
+
+    if len(bricks) == 0:
+        if level < 3:
+            level += 1
+            create_bricks()
+            reset_ball()
+            
+
 
 
     pygame.display.flip()
