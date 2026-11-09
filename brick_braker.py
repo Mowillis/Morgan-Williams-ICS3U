@@ -4,6 +4,13 @@ import os
 
 pygame.init()
 
+#make random sounds
+sounds = [
+    pygame.mixer.Sound("Scream1.mp3")
+    pygame.mixer.Sound("Scream2.mp3") 
+    pygame.mixer.Sound("Scream3.mp3")
+    ]
+
 # Set screen dimensions
 # Screen Set Up
 SCREEN_WIDTH = 800
@@ -122,6 +129,7 @@ def check_collison(ball_speed_x, ball_speed_y, score):
         if ball_speed_x == 0:
             ball_speed_x = random.choice ([4,-4])
 
+
     brick_hit = False
 
     for brick in bricks:
@@ -201,11 +209,13 @@ while running:
         reset_ball(ball_speed_x, ball_speed_y)
         lives -= 1
 
+    #Makes second level start
     if len(bricks) == 0:
         if level < 3:
             level += 1
+
             create_bricks()
-            reset_ball()
+            reset_ball(ball_speed_x, ball_speed_y)
             
 
 
