@@ -6,9 +6,7 @@ pygame.init()
 
 #make random sounds
 sounds = [
-    pygame.mixer.Sound("Scream1.mp3")
-    pygame.mixer.Sound("Scream2.mp3") 
-    pygame.mixer.Sound("Scream3.mp3")
+    pygame.mixer.Sound("contact_sound.mp3")
     ]
 
 # Set screen dimensions
@@ -128,6 +126,7 @@ def check_collison(ball_speed_x, ball_speed_y, score):
 
         if ball_speed_x == 0:
             ball_speed_x = random.choice ([4,-4])
+        random.choice(sounds).play()
 
 
     brick_hit = False
@@ -154,6 +153,7 @@ def check_collison(ball_speed_x, ball_speed_y, score):
             bricks.remove(brick)
             score += 10
             brick_hit = True
+            random.choice(sounds).play()
 
     return ball_speed_x, ball_speed_y, score
 
