@@ -209,13 +209,22 @@ while running:
         reset_ball(ball_speed_x, ball_speed_y)
         lives -= 1
 
+        #end game when lives = 0
+        if lives < 0:
+            game_state = "game over"
+
     #Makes second level start
     if len(bricks) == 0:
         if level < 3:
             level += 1
+            
+        else: 
+            game_state = "victory"
 
             create_bricks()
             reset_ball(ball_speed_x, ball_speed_y)
+
+    if game_state == "game over":
             
 
 
