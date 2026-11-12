@@ -15,6 +15,7 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 
 font = pygame.font.SysFont("Arial", 25)
+big_font = pygame.font.SysFont("Arial", 45)
 
 # Create the game window
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -26,6 +27,9 @@ clock = pygame.time.Clock()
 score = 0
 lives = 3
 level = 1
+game_state = "menu"
+title = ""
+message = ""
 
 #COLOURS
 BLACK = (15, 15, 25)
@@ -183,6 +187,18 @@ def reset_ball(ball_speed_x, ball_speed_y):
     ball_speed_y = -4
 
     return ball_speed_x, ball_speed_y
+
+def draw_message(title, message):
+    screen.fill(BLACK)
+    title_display = big_font.render(title, True, YELLOW)
+    message_display = font.render(message, True, WHITE)
+
+    screen.blit(title_display, (SCREEN_WIDTH // 2 - title_display.get_width() // 2, 220
+))
+    screen.blit(message_display, (SCREEN_WIDTH // 2 - message_display.get_width() // 2, 300
+))
+    return title, message
+
         
 create_bricks()
 reset_ball(ball_speed_x, ball_speed_y)
@@ -210,23 +226,28 @@ while running:
         lives -= 1
 
         #end game when lives = 0
-        if lives < 0:
+        if lives <= 0:
             game_state = "game over"
 
     #Makes second level start
     if len(bricks) == 0:
         if level < 3:
             level += 1
-            
-        else: 
-            game_state = "victory"
-
             create_bricks()
             reset_ball(ball_speed_x, ball_speed_y)
+            
+        elif len(bricks) == 0 and level >= 3:
+            game_state = "victory"
 
     if game_state == "game over":
-            
+        title = "GAME OVER"
+        message = "Press ENTER to restart, ESC to quit"
+        title, message = draw_message(title, message)
 
+    if game_state == "victory":
+        title = "VCTORY!"
+        message = "Press ENTER to restart, ESC to quit"
+        title, message = draw_message(title, message)
 
 
     pygame.display.flip()
