@@ -48,8 +48,8 @@ paddle_x = 350
 
 #Ball
 ball = pygame.Rect(390, 520, 18, 18)
-ball_speed_x = 4
-ball_speed_y = -4
+ball_speed_x = 6
+ball_speed_y = -6
 
 #Bricks
 brick_width = 65
@@ -129,7 +129,7 @@ def check_collison(ball_speed_x, ball_speed_y, score):
         ball_speed_x = int(hit_position * 5)
 
         if ball_speed_x == 0:
-            ball_speed_x = random.choice ([4,-4])
+            ball_speed_x = random.choice ([6,-6])
         random.choice(sounds).play()
 
 
@@ -199,6 +199,16 @@ def draw_message(title, message):
 ))
     return title, message
 
+def reset_game(score, lives, level):
+    score = 0
+    lives = 3
+    level = 1
+
+    create_bricks()
+    reset_ball()
+
+    return score, lives, level
+
         
 create_bricks()
 reset_ball(ball_speed_x, ball_speed_y)
@@ -213,40 +223,64 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    draw_game()
-    paddle_movement(paddle_x)
-    #used to make new ball when colision with bricks
-    old_ball = ball.copy()
-    ball_speed_x, ball_speed_y = ball_movement(ball_speed_x, ball_speed_y)
-    ball_speed_x, ball_speed_y, score = check_collison(ball_speed_x, ball_speed_y, score)
+    if game_state == "playing":
 
-    #reset ball and lose life if ball falls bellow paddle
-    if ball.top > SCREEN_HEIGHT:
-        reset_ball(ball_speed_x, ball_speed_y)
-        lives -= 1
+        draw_game()
+        paddle_movement(paddle_x)
+        #used to make new ball when colision with bricks
+        old_ball = ball.copy()
+        ball_speed_x, ball_speed_y = ball_movement(ball_speed_x, ball_speed_y)
+        ball_speed_x, ball_speed_y, score = check_collison(ball_speed_x, ball_speed_y, score)
 
-        #end game when lives = 0
-        if lives <= 0:
-            game_state = "game over"
-
-    #Makes second level start
-    if len(bricks) == 0:
-        if level < 3:
-            level += 1
-            create_bricks()
+        #reset ball and lose life if ball falls bellow paddle
+        if ball.top > SCREEN_HEIGHT:
             reset_ball(ball_speed_x, ball_speed_y)
+            lives -= 1
+
+            #end game when lives = 0
+            if lives <= 0:
+                game_state = "game over"
+
+        #Makes second level start
+        if len(bricks) == 0:
+            if level < 3:
+                level += 1
+                create_bricks()
+                reset_ball(ball_speed_x, ball_speed_y)
             
-        elif len(bricks) == 0 and level >= 3:
-            game_state = "victory"
+            elif len(bricks) == 0 and level >= 3:
+                game_state = "victory"
+
+    if game_state == "menu":
+        title = "BRICK BREAKER"
+        message = "Press RETURN to start, ESC to quit"
+        title, message = draw_message(title, message)
+    
+        keys = pygame.key.get_pressed()
+    
+        if keys[pygame.K_RETURN]:
+            game_state = "playing"
+
+        if keys[pygame.K_ESCAPE]:
+            running = False
 
     if game_state == "game over":
         title = "GAME OVER"
-        message = "Press ENTER to restart, ESC to quit"
+        message = "Press RETURN to restart, ESC to quit"
         title, message = draw_message(title, message)
 
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_RETURN]:
+            score, lives, level = reset_game(score, lives, level)
+            game_state = "playing"
+
+        if keys[pygame.K_ESCAPE]:
+            running = False
+
     if game_state == "victory":
-        title = "VCTORY!"
-        message = "Press ENTER to restart, ESC to quit"
+        title = "VICTORY!"
+        message = "You Cleared All 3 Levels!"
         title, message = draw_message(title, message)
 
 
