@@ -1,6 +1,5 @@
 import pygame
 import random
-import os
 
 pygame.init()
 
@@ -120,7 +119,7 @@ def paddle_movement(paddle_x):
 
 def check_collison(ball_speed_x, ball_speed_y, score):
     if ball.colliderect(paddle) and ball_speed_y > 0:
-        #makes ball top
+        #makes ball not go through paddle
         ball.bottom = paddle.top
         ball_speed_y *= -1
 
@@ -135,6 +134,7 @@ def check_collison(ball_speed_x, ball_speed_y, score):
 
     brick_hit = False
 
+    #makes ball bounce back smoothly and change derection depending where hit
     for brick in bricks:
         if ball.colliderect(brick) and brick_hit == False:
 
@@ -170,7 +170,6 @@ def ball_movement(ball_speed_x, ball_speed_y):
     if ball.left <= 0 or ball.right >= SCREEN_WIDTH:
         ball_speed_x *= -1
 
-
     #bounce off roof
     if ball.top <= 0:
         ball_speed_y *= -1
@@ -189,6 +188,7 @@ def reset_ball(ball_speed_x, ball_speed_y):
     return ball_speed_x, ball_speed_y
 
 def draw_message(title, message):
+    #clears screen and displays message
     screen.fill(BLACK)
     title_display = big_font.render(title, True, YELLOW)
     message_display = font.render(message, True, WHITE)
@@ -205,7 +205,7 @@ def reset_game(score, lives, level):
     level = 1
 
     create_bricks()
-    reset_ball()
+    reset_ball(ball_speed_x, ball_speed_y)
 
     return score, lives, level
 
@@ -250,7 +250,8 @@ while running:
             
             elif len(bricks) == 0 and level >= 3:
                 game_state = "victory"
-
+                
+#displays different screens depending on game state
     if game_state == "menu":
         title = "BRICK BREAKER"
         message = "Press RETURN to start, ESC to quit"
